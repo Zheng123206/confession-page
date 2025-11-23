@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 表白网页 💕</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: heartbeat 2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #764ba2;
+            line-height: 1.8;
+        }
+
+        .message-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-section textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+
+        .message-section textarea:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-center {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            aspect-ratio: 1;
+        }
+
+        .photo-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .photo-delete {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .photo-item:hover .photo-delete {
+            opacity: 1;
+        }
+
+        .photo-delete:hover {
+            background: rgba(255, 0, 0, 1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: rgba(255, 192, 203, 0.6);
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 排版视图模态框 */
+        .layout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1000;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .layout-modal.active {
+            display: block;
+        }
+
+        .layout-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .layout-title {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .layout-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .layout-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .layout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .layout-btn.active {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .close-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #ff5252;
+            transform: rotate(90deg);
+        }
+
+        .layout-content {
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .layout-message {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 1000px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .layout-message-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .layout-message-content {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 2;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 50px;
+        }
+
+        .layout-message-empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        /* 瀑布流布局 */
+        .masonry-layout {
+            column-count: 4;
+            column-gap: 20px;
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            background: white;
+        }
+
+        .masonry-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .masonry-item img {
+            width: 100%;
+            display: block;
+            border-radius: 15px;
+        }
+
+        /* 网格布局 */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+            aspect-ratio: 1;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 拼贴画布局 */
+        .collage-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 200px);
+            gap: 15px;
+        }
+
+        .collage-item {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .collage-item:nth-child(1) {
+            grid-column: 1 / 3;
+            grid-row: 1 / 3;
+        }
+
+        .collage-item:nth-child(2) {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .collage-item:nth-child(3) {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .collage-item:nth-child(4) {
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        .collage-item:nth-child(5) {
+            grid-column: 2 / 4;
+            grid-row: 3;
+        }
+
+        .collage-item:hover {
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .collage-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 时间轴布局 */
+        .timeline-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-item:hover {
+            transform: translateX(10px);
+        }
+
+        .timeline-item:nth-child(even):hover {
+            transform: translateX(-10px);
+        }
+
+        .timeline-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 15px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .timeline-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-number {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1200px) {
+            .masonry-layout {
+                column-count: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .photos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .masonry-layout {
+                column-count: 2;
+            }
+
+            .collage-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .collage-item {
+                grid-column: 1 !important;
+                grid-row: auto !important;
+            }
+
+            .timeline-item {
+                flex-direction: column !important;
+            }
+
+            .timeline-image {
+                width: 100%;
+            }
+
+            .layout-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .layout-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>💕 我想对你说 💕</h1>
+            <p>记录我们的美好时光，留下珍贵的回忆</p>
+        </div>
+
+        <div class="message-section">
+            <h2 style="color: #667eea; margin-bottom: 15px;">💌 表白话语</h2>
+            <textarea id="message" placeholder="在这里写下你想说的话..."></textarea>
+        </div>
+
+        <div class="upload-section">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📸 添加照片</h2>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">点击或拖拽照片到这里</div>
+                <div class="upload-hint">支持 JPG、PNG、GIF 格式</div>
+                <input type="file" id="fileInput" multiple accept="image/*">
+            </div>
+        </div>
+
+        <div class="btn-center">
+            <button class="btn" onclick="loadPredefinedPhotos()">📷 加载照片</button>
+            <button class="btn" onclick="saveData()">💾 保存</button>
+            <button class="btn" onclick="loadData()">📂 加载</button>
+            <button class="btn" onclick="generateShareLink()">🔗 生成分享链接</button>
+            <button class="btn" onclick="showLayout()">🎨 排版展示</button>
+            <button class="btn" onclick="clearAll()">🗑️ 清空</button>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0; color: #667eea; font-size: 0.9em;">
+            <div id="dataInfo">💡 提示：照片会自动压缩以优化分享</div>
+        </div>
+
+        <div id="photosContainer">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">🖼️</div>
+                <p>还没有照片，快添加一些美好的回忆吧！</p>
+            </div>
+            <div class="photos-grid" id="photosGrid" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- 排版展示模态框 -->
+    <div class="layout-modal" id="layoutModal">
+        <div class="layout-header">
+            <div class="layout-title">🎨 照片排版展示</div>
+            <div class="layout-controls">
+                <button class="layout-btn active" onclick="switchLayout('masonry')">瀑布流</button>
+                <button class="layout-btn" onclick="switchLayout('grid')">网格</button>
+                <button class="layout-btn" onclick="switchLayout('collage')">拼贴画</button>
+                <button class="layout-btn" onclick="switchLayout('timeline')">时间轴</button>
+            </div>
+            <button class="close-btn" onclick="closeLayout()">×</button>
+        </div>
+        <div class="layout-content">
+            <div class="layout-message" id="layoutMessage">
+                <div class="layout-message-title">💌 我想对你说</div>
+                <div class="layout-message-content layout-message-empty" id="layoutMessageContent">还没有写下想说的话...</div>
+            </div>
+            <div id="layoutContainer"></div>
+        </div>
+    </div>
+
+    <!-- 嵌入的照片数据 -->
+    <script src="embedded_photos.js"></script>
+    
+    <script>
+        let photos = [];
+        const maxPhotos = 20;
+        
+        // 嵌入的照片数据（如果存在）
+        let embeddedPhotosData = [];
+        if (typeof embeddedPhotos !== 'undefined') {
+            embeddedPhotosData = embeddedPhotos;
+        }
+
+        // 创建飘落的心形
+        function createHearts() {
+            const heartsContainer = document.getElementById('hearts');
+            const hearts = ['💕', '💖', '💗', '💓', '💝', '💘', '❤️', '💜'];
+            
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.animationDuration = (10 + Math.random() * 10) + 's';
+                    heartsContainer.appendChild(heart);
+                    
+                    setTimeout(() => {
+                        heart.remove();
+                    }, 20000);
+                }
+            }, 500);
+        }
+
+        // 初始化
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const photosGrid = document.getElementById('photosGrid');
+        const emptyState = document.getElementById('emptyState');
+
+        // 点击上传区域
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 文件选择
+        fileInput.addEventListener('change', handleFiles);
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+            handleFileList(files);
+        });
+
+        // 处理文件
+        function handleFiles(e) {
+            const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+            handleFileList(files);
+        }
+
+        function handleFileList(files) {
+            if (photos.length + files.length > maxPhotos) {
+                alert(`最多只能添加 ${maxPhotos} 张照片！`);
+                return;
+            }
+
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // 压缩照片以减少数据大小
+                    compressImage(e.target.result, (compressed) => {
+                        photos.push({
+                            id: Date.now() + Math.random(),
+                            data: compressed
+                        });
+                        updatePhotosDisplay();
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 压缩图片
+        function compressImage(dataUrl, callback) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 设置最大尺寸
+                const maxWidth = 800;
+                const maxHeight = 800;
+                let width = img.width;
+                let height = img.height;
+                
+                // 计算缩放比例
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = height * (maxWidth / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = width * (maxHeight / height);
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 绘制并压缩
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // 使用高质量压缩（0.85质量，平衡文件大小和图片质量）
+                const compressed = canvas.toDataURL('image/jpeg', 0.85);
+                callback(compressed);
+            };
+            img.src = dataUrl;
+        }
+
+        // 更新照片显示
+        function updatePhotosDisplay() {
+            if (photos.length === 0) {
+                photosGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+                updateDataInfo();
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            photosGrid.style.display = 'grid';
+            photosGrid.innerHTML = '';
+
+            photos.forEach((photo, index) => {
+                const photoItem = document.createElement('div');
+                photoItem.className = 'photo-item';
+                photoItem.innerHTML = `
+                    <img src="${photo.data}" alt="照片 ${index + 1}">
+                    <button class="photo-delete" onclick="deletePhoto(${index})">×</button>
+                `;
+                photosGrid.appendChild(photoItem);
+            });
+            
+            updateDataInfo();
+        }
+
+        // 更新数据信息显示
+        function updateDataInfo() {
+            const infoEl = document.getElementById('dataInfo');
+            if (!infoEl) return;
+            
+            const message = document.getElementById('message').value.trim();
+            const photoCount = photos.length;
+            
+            if (photoCount === 0 && !message) {
+                infoEl.textContent = '💡 提示：照片会自动压缩以优化分享';
+                return;
+            }
+            
+            // 计算数据大小
+            let totalSize = 0;
+            photos.forEach(photo => {
+                totalSize += photo.data.length;
+            });
+            if (message) {
+                totalSize += message.length;
+            }
+            
+            const sizeKB = (totalSize / 1024).toFixed(1);
+            const sizeMB = (totalSize / 1024 / 1024).toFixed(2);
+            
+            let sizeText = sizeMB > 1 ? sizeMB + ' MB' : sizeKB + ' KB';
+            
+            let status = '✅';
+            if (totalSize > 3 * 1024 * 1024) { // 超过3MB
+                status = '⚠️';
+            } else if (totalSize > 1.5 * 1024 * 1024) { // 超过1.5MB
+                status = '⚡';
+            }
+            
+            let info = `${status} 当前：`;
+            if (message) info += '文字 + ';
+            if (photoCount > 0) info += `${photoCount} 张照片`;
+            info += ` (${sizeText})`;
+            
+            if (totalSize > 3 * 1024 * 1024) {
+                info += ' - 建议减少照片数量';
+            } else if (photoCount > 10) {
+                info += ' - 照片较多，分享链接可能较长';
+            }
+            
+            infoEl.textContent = info;
+        }
+
+        // 删除照片
+        function deletePhoto(index) {
+            if (confirm('确定要删除这张照片吗？')) {
+                photos.splice(index, 1);
+                updatePhotosDisplay();
+            }
+        }
+
+        // 保存数据到本地存储
+        function saveData() {
+            const data = {
+                message: document.getElementById('message').value,
+                photos: photos
+            };
+            localStorage.setItem('confessionData', JSON.stringify(data));
+            alert('💾 保存成功！');
+        }
+
+        // 加载数据
+        function loadData() {
+            const saved = localStorage.getItem('confessionData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('message').value = data.message || '';
+                photos = data.photos || [];
+                updatePhotosDisplay();
+                alert('📂 加载成功！');
+            } else {
+                alert('没有找到保存的数据！');
+            }
+        }
+
+        // 生成分享链接（跨设备同步）
+        function generateShareLink() {
+            const message = document.getElementById('message').value.trim();
+            
+            if (!message && photos.length === 0) {
+                alert('请先添加内容（文字或照片）！');
+                return;
+            }
+
+            const data = {
+                message: message,
+                photos: photos
+            };
+            
+            const dataStr = JSON.stringify(data);
+            
+            // 使用更高效的编码方式
+            let encoded;
+            try {
+                // 先压缩JSON字符串（移除空格）
+                const compressed = dataStr.replace(/\s+/g, '');
+                encoded = btoa(unescape(encodeURIComponent(compressed)));
+            } catch (e) {
+                encoded = btoa(unescape(encodeURIComponent(dataStr)));
+            }
+            
+            const baseUrl = window.location.origin + window.location.pathname;
+            const fullUrl = baseUrl + '?data=' + encoded;
+            
+            // 现代浏览器支持更长的URL（约8000字符），但为了兼容性，我们设置一个合理的限制
+            const maxUrlLength = 6000; // 增加限制以支持更多照片
+            
+            if (fullUrl.length > maxUrlLength) {
+                // 如果数据太大，尝试分块存储
+                if (photos.length > 0 && message) {
+                    // 方案1：只分享文字，照片用提示
+                    const textOnlyUrl = baseUrl + '?text=' + encodeURIComponent(message);
+                    copyToClipboard(textOnlyUrl);
+                    alert('📝 照片数据较大，已生成文字分享链接！\n\n照片数据：' + photos.length + ' 张\n\n建议：\n1. 分享此链接（包含文字）\n2. 照片可以单独发送，或让对方重新上传\n\n链接已复制到剪贴板！');
+                } else if (message) {
+                    const textOnlyUrl = baseUrl + '?text=' + encodeURIComponent(message);
+                    copyToClipboard(textOnlyUrl);
+                    alert('📝 已生成文字分享链接！\n\n链接已复制到剪贴板！');
+                } else {
+                    // 尝试只分享照片（如果照片不太多）
+                    if (photos.length <= 5) {
+                        const photosOnly = { photos: photos };
+                        const photosStr = JSON.stringify(photosOnly).replace(/\s+/g, '');
+                        const photosEncoded = btoa(unescape(encodeURIComponent(photosStr)));
+                        const photosUrl = baseUrl + '?data=' + photosEncoded;
+                        
+                        if (photosUrl.length <= maxUrlLength) {
+                            copyToClipboard(photosUrl);
+                            alert('📸 已生成照片分享链接！\n\n照片数量：' + photos.length + ' 张\n\n链接已复制到剪贴板！');
+                        } else {
+                            alert('⚠️ 照片数据太大，无法生成分享链接。\n\n建议：\n1. 减少照片数量（建议5张以内）\n2. 或使用其他方式分享照片');
+                        }
+                    } else {
+                        alert('⚠️ 照片太多，无法生成分享链接。\n\n建议：\n1. 减少照片数量（建议5张以内）\n2. 或使用其他方式分享照片');
+                    }
+                }
+            } else {
+                // 数据大小合适，生成完整分享链接
+                copyToClipboard(fullUrl);
+                const photoCount = photos.length;
+                const messageText = message ? '文字 + ' : '';
+                alert('🔗 分享链接已生成并复制到剪贴板！\n\n内容：' + messageText + photoCount + ' 张照片\n\n发送这个链接给别人，他们打开后就能看到完整内容了！✨');
+            }
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text);
+            } else {
+                // 兼容旧浏览器
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // 从URL参数加载数据
+        function loadFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 尝试加载完整数据
+            const dataParam = urlParams.get('data');
+            if (dataParam) {
+                try {
+                    const decoded = decodeURIComponent(escape(atob(dataParam)));
+                    const data = JSON.parse(decoded);
+                    
+                    if (data.message) {
+                        document.getElementById('message').value = data.message;
+                    }
+                    
+                    if (data.photos && data.photos.length > 0) {
+                        photos = data.photos;
+                        updatePhotosDisplay();
+                    }
+                    
+                    // 清除URL参数，避免刷新时重复加载
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    if (data.message || (data.photos && data.photos.length > 0)) {
+                        alert('📥 已从分享链接加载内容！');
+                    }
+                } catch (e) {
+                    console.error('加载数据失败:', e);
+                }
+            }
+            
+            // 尝试加载纯文字
+            const textParam = urlParams.get('text');
+            if (textParam) {
+                document.getElementById('message').value = decodeURIComponent(textParam);
+                window.history.replaceState({}, document.title, window.location.pathname);
+                alert('📥 已从分享链接加载文字内容！');
+            }
+        }
+
+        // 清空所有
+        function clearAll() {
+            if (confirm('确定要清空所有内容吗？此操作不可恢复！')) {
+                document.getElementById('message').value = '';
+                photos = [];
+                updatePhotosDisplay();
+                localStorage.removeItem('confessionData');
+                alert('🗑️ 已清空！');
+            }
+        }
+
+        // 启动心形动画
+        createHearts();
+
+        // 排版功能
+        let currentLayout = 'masonry';
+
+        function showLayout() {
+            if (photos.length === 0) {
+                alert('请先添加照片！');
+                return;
+            }
+            const modal = document.getElementById('layoutModal');
+            modal.classList.add('active');
+            updateLayoutMessage();
+            renderLayout();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function updateLayoutMessage() {
+            const messageContent = document.getElementById('layoutMessageContent');
+            const message = document.getElementById('message').value.trim();
+            
+            if (message) {
+                messageContent.textContent = message;
+                messageContent.classList.remove('layout-message-empty');
+            } else {
+                messageContent.textContent = '还没有写下想说的话...';
+                messageContent.classList.add('layout-message-empty');
+            }
+        }
+
+        function closeLayout() {
+            const modal = document.getElementById('layoutModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function switchLayout(layout) {
+            currentLayout = layout;
+            // 更新按钮状态
+            document.querySelectorAll('.layout-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(getLayoutName(layout))) {
+                    btn.classList.add('active');
+                }
+            });
+            renderLayout();
+        }
+
+        function getLayoutName(layout) {
+            const names = {
+                'masonry': '瀑布流',
+                'grid': '网格',
+                'collage': '拼贴画',
+                'timeline': '时间轴'
+            };
+            return names[layout] || '';
+        }
+
+        function renderLayout() {
+            const container = document.getElementById('layoutContainer');
+            container.innerHTML = '';
+
+            if (photos.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: white; padding: 50px; font-size: 1.5em;">还没有照片</div>';
+                return;
+            }
+
+            switch (currentLayout) {
+                case 'masonry':
+                    renderMasonry(container);
+                    break;
+                case 'grid':
+                    renderGrid(container);
+                    break;
+                case 'collage':
+                    renderCollage(container);
+                    break;
+                case 'timeline':
+                    renderTimeline(container);
+                    break;
+            }
+        }
+
+        function renderMasonry(container) {
+            container.className = 'masonry-layout';
+            
+            // 如果有表白话语，作为第一项显示
+            const message = document.getElementById('message').value.trim();
+            if (message) {
+                const messageItem = document.createElement('div');
+                messageItem.className = 'masonry-item';
+                messageItem.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; display: flex; flex-direction: column; justify-content: center; text-align: center; min-height: 200px;';
+                messageItem.innerHTML = `
+                    <div style="font-size: 2.5em; margin-bottom: 15px;">💌</div>
+                    <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 15px;">我想对你说</div>
+                    <div style="font-size: 1.1em; line-height: 1.8; white-space: pre-wrap;">${message}</div>
+                `;
+                container.appendChild(messageItem);
+            }
+            
+            photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'masonry-item';
+                item.innerHTML = `<img src="${photo.data}" alt="照片 ${index + 1}">`;
+                container.appendChild(item);
+            });
+        }
+
+        function renderGrid(container) {
+            container.className = 'grid-layout';
+            
+            // 如果有表白话语，作为第一项显示
+            const message = document.getElementById('message').value.trim();
+            if (message) {
+                const messageItem = document.createElement('div');
+                messageItem.className = 'grid-item';
+                messageItem.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; display: flex; flex-direction: column; justify-content: center; text-align: center;';
+                messageItem.innerHTML = `
+                    <div style="font-size: 2em; margin-bottom: 10px;">💌</div>
+                    <div style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px;">我想对你说</div>
+                    <div style="font-size: 1em; line-height: 1.6; white-space: pre-wrap; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical;">${message}</div>
+                `;
+                container.appendChild(messageItem);
+            }
+            
+            photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'grid-item';
+                item.innerHTML = `<img src="${photo.data}" alt="照片 ${index + 1}">`;
+                container.appendChild(item);
+            });
+        }
+
+        function renderCollage(container) {
+            container.className = 'collage-layout';
+            
+            // 如果有表白话语，放在第一个大位置
+            const message = document.getElementById('message').value.trim();
+            if (message) {
+                const messageItem = document.createElement('div');
+                messageItem.className = 'collage-item';
+                messageItem.style.cssText = 'grid-column: 1 / 3; grid-row: 1 / 3; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; display: flex; flex-direction: column; justify-content: center; text-align: center;';
+                messageItem.innerHTML = `
+                    <div style="font-size: 3em; margin-bottom: 20px;">💌</div>
+                    <div style="font-size: 2em; font-weight: bold; margin-bottom: 20px;">我想对你说</div>
+                    <div style="font-size: 1.3em; line-height: 2; white-space: pre-wrap;">${message}</div>
+                `;
+                container.appendChild(messageItem);
+                
+                // 显示剩余的照片（最多8张，因为第一个位置被话语占用了）
+                photos.slice(0, 8).forEach((photo, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'collage-item';
+                    item.innerHTML = `<img src="${photo.data}" alt="照片 ${index + 1}">`;
+                    container.appendChild(item);
+                });
+            } else {
+                // 如果没有表白话语，正常显示照片
+                photos.slice(0, 9).forEach((photo, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'collage-item';
+                    item.innerHTML = `<img src="${photo.data}" alt="照片 ${index + 1}">`;
+                    container.appendChild(item);
+                });
+            }
+            
+            if (photos.length > (message ? 8 : 9)) {
+                const more = document.createElement('div');
+                more.style.cssText = 'grid-column: 1 / -1; text-align: center; color: white; padding: 20px; font-size: 1.2em;';
+                more.textContent = `还有 ${photos.length - (message ? 8 : 9)} 张照片...`;
+                container.appendChild(more);
+            }
+        }
+
+        function renderTimeline(container) {
+            container.className = 'timeline-layout';
+            
+            // 如果有表白话语，在时间轴开头显示
+            const message = document.getElementById('message').value.trim();
+            if (message) {
+                const messageItem = document.createElement('div');
+                messageItem.className = 'timeline-item';
+                messageItem.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; flex-direction: column; text-align: center; padding: 40px;';
+                messageItem.innerHTML = `
+                    <div style="font-size: 2em; margin-bottom: 20px;">💌</div>
+                    <div style="font-size: 1.8em; font-weight: bold; margin-bottom: 15px;">我想对你说</div>
+                    <div style="font-size: 1.3em; line-height: 2; white-space: pre-wrap;">${message}</div>
+                `;
+                container.appendChild(messageItem);
+            }
+            
+            photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `
+                    <div class="timeline-image">
+                        <img src="${photo.data}" alt="照片 ${index + 1}">
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-number">#${index + 1}</div>
+                        <p style="color: #667eea; margin-top: 10px; font-size: 1.1em;">美好的回忆 ${index + 1}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('layoutModal').addEventListener('click', (e) => {
+            if (e.target.id === 'layoutModal') {
+                closeLayout();
+            }
+        });
+
+        // ESC键关闭
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLayout();
+            }
+        });
+
+        // 加载嵌入的照片（base64 数据，直接存储在网页中）
+        function loadEmbeddedPhotos() {
+            if (embeddedPhotosData.length === 0) {
+                console.log('没有找到嵌入的照片数据');
+                return false;
+            }
+            
+            if (photos.length > 0 && !confirm('当前已有照片，是否要添加嵌入的照片？')) {
+                return false;
+            }
+            
+            const infoEl = document.getElementById('dataInfo');
+            if (infoEl) {
+                infoEl.textContent = `📷 正在加载嵌入的照片... (0/${embeddedPhotosData.length})`;
+            }
+            
+            let loadedCount = 0;
+            const existingPhotoIds = new Set(photos.map(p => p.id));
+            
+            embeddedPhotosData.forEach((photoData, index) => {
+                // 压缩嵌入的照片（优化大小）
+                compressImage(photoData.data, (compressed) => {
+                    const photoId = photoData.id || 'embedded_' + index;
+                    // 避免重复添加
+                    if (!existingPhotoIds.has(photoId)) {
+                        photos.push({
+                            id: photoId,
+                            filename: photoData.filename || `照片${index + 1}`,
+                            data: compressed
+                        });
+                        existingPhotoIds.add(photoId);
+                    }
+                    loadedCount++;
+                    
+                    // 更新加载提示
+                    if (infoEl) {
+                        infoEl.textContent = `📷 正在加载嵌入的照片... (${loadedCount}/${embeddedPhotosData.length})`;
+                    }
+                    
+                    // 所有照片加载完成后更新显示
+                    if (loadedCount === embeddedPhotosData.length) {
+                        updatePhotosDisplay();
+                        if (infoEl) {
+                            infoEl.textContent = `✅ 成功加载 ${loadedCount} 张嵌入的照片！`;
+                            setTimeout(() => {
+                                updateDataInfo();
+                            }, 1000);
+                        }
+                    }
+                });
+            });
+            
+            return true;
+        }
+        
+        // 预定义的照片列表（文件路径方式，作为备选）
+        const predefinedPhotos = [
+            '1c0b6447fa95b860c58d122ab7c55dc8.jpg',
+            '32d17e26bbdf1fcbb9330b582d0f0fad.jpg',
+            '4354f3afd24b12b91a902dc11a3d98fb.jpg',
+            '51869947eb6ca131c0952c295dc0cf67.jpg',
+            '557cc6e34822ec93bf6ae8838ea1f112.jpg',
+            '6664fce346d2ca0db84a1b3aff34ad8c.jpg',
+            '7b24577cc88cf0011dab4b8e0a9114ad.jpg',
+            '9575abeac24fdb7eae37e2bf507bd7d7.jpg',
+            'b6e947676228e75a4f6f3db4950c8f36.jpg'
+        ];
+
+        // 加载预定义照片（全局函数，供按钮调用）
+        // 优先使用嵌入的照片数据，如果没有则尝试从文件加载
+        window.loadPredefinedPhotos = function() {
+            // 优先尝试加载嵌入的照片
+            if (embeddedPhotosData.length > 0) {
+                if (loadEmbeddedPhotos()) {
+                    return;
+                }
+            }
+            
+            // 如果没有嵌入的照片，尝试从文件加载
+            if (photos.length > 0 && !confirm('当前已有照片，是否要添加这些照片？')) {
+                return;
+            }
+            
+            let loadedCount = 0;
+            let successCount = 0;
+            const totalPhotos = predefinedPhotos.length;
+            const existingPhotoIds = new Set(photos.map(p => p.id));
+            
+            // 显示加载提示
+            const infoEl = document.getElementById('dataInfo');
+            const originalText = infoEl ? infoEl.textContent : '';
+            if (infoEl) {
+                infoEl.textContent = '📷 正在从文件加载照片... (0/' + totalPhotos + ')';
+            }
+            
+            predefinedPhotos.forEach((photoPath, index) => {
+                const img = new Image();
+                img.onload = function() {
+                    // 将图片转换为 base64
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // 压缩图片
+                    compressImage(canvas.toDataURL('image/jpeg', 1), (compressed) => {
+                        const photoId = 'predefined_' + index;
+                        // 避免重复添加
+                        if (!existingPhotoIds.has(photoId)) {
+                            photos.push({
+                                id: photoId,
+                                data: compressed
+                            });
+                            existingPhotoIds.add(photoId);
+                            successCount++;
+                        }
+                        loadedCount++;
+                        
+                        // 更新加载提示
+                        if (infoEl) {
+                            infoEl.textContent = `📷 正在从文件加载照片... (${loadedCount}/${totalPhotos})`;
+                        }
+                        
+                        // 所有照片加载完成后更新显示
+                        if (loadedCount === totalPhotos) {
+                            updatePhotosDisplay();
+                            if (infoEl) {
+                                if (successCount > 0) {
+                                    infoEl.textContent = `✅ 成功加载 ${successCount} 张照片！`;
+                                    setTimeout(() => {
+                                        updateDataInfo();
+                                    }, 1000);
+                                } else {
+                                    infoEl.textContent = originalText;
+                                    alert('⚠️ 无法加载照片！\n\n可能的原因：\n1. 照片文件不在同一目录\n2. 使用 file:// 协议打开（浏览器安全限制）\n\n解决方案：\n使用本地服务器运行（如 VS Code 的 Live Server 扩展）');
+                                }
+                            }
+                        }
+                    });
+                };
+                img.onerror = function() {
+                    console.warn('无法加载照片:', photoPath);
+                    loadedCount++;
+                    
+                    // 更新加载提示
+                    if (infoEl) {
+                        infoEl.textContent = `📷 正在从文件加载照片... (${loadedCount}/${totalPhotos})`;
+                    }
+                    
+                    if (loadedCount === totalPhotos) {
+                        updatePhotosDisplay();
+                        if (infoEl) {
+                            if (successCount > 0) {
+                                infoEl.textContent = `✅ 成功加载 ${successCount} 张照片！`;
+                                setTimeout(() => {
+                                    updateDataInfo();
+                                }, 1000);
+                            } else {
+                                infoEl.textContent = originalText;
+                                alert('⚠️ 无法加载照片！\n\n可能的原因：\n1. 照片文件不在同一目录\n2. 使用 file:// 协议打开（浏览器安全限制）\n\n解决方案：\n使用本地服务器运行（如 VS Code 的 Live Server 扩展）');
+                            }
+                        }
+                    }
+                };
+                img.src = photoPath;
+            });
+        };
+
+        // 页面加载时自动加载数据
+        window.addEventListener('load', () => {
+            // 优先从URL加载（分享链接）
+            loadFromURL();
+            
+            // 如果没有URL数据，则从本地存储加载
+            if (!window.location.search.includes('data=') && !window.location.search.includes('text=')) {
+                const saved = localStorage.getItem('confessionData');
+                if (saved) {
+                    loadData();
+                } else {
+                    // 延迟一点加载，确保 embedded_photos.js 已加载
+                    setTimeout(() => {
+                        // 优先尝试加载嵌入的照片（直接存储在网页中，无需外部文件）
+                        if (embeddedPhotosData.length > 0) {
+                            loadEmbeddedPhotos();
+                        } else {
+                            // 如果没有嵌入的照片，尝试从文件加载（需要 HTTP 服务器）
+                            const protocol = window.location.protocol;
+                            if (protocol === 'http:' || protocol === 'https:') {
+                                loadPredefinedPhotos();
+                            }
+                        }
+                    }, 300);
+                }
+            }
+            
+            // 监听消息输入变化
+            const messageInput = document.getElementById('message');
+            if (messageInput) {
+                messageInput.addEventListener('input', updateDataInfo);
+            }
+        });
+    </script>
+</body>
+</html>
